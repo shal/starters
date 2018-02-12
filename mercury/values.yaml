@@ -1,0 +1,40 @@
+# Default values for <CHARTNAME>.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+image:
+  repository: ashanaakh/<CHARTNAME>
+  tag: latest
+
+service:
+  type: ClusterIP
+  externalPort: 80
+  internalPort: 8080
+
+resources: {}
+
+<CHARTNAME>:
+# Override container default command
+# command: [""]
+# Additional environment variables
+  vars: {}
+  # NAME: value
+
+## Persist data to a persistent volume
+persistence:
+  enabled: true
+  ## database data Persistent Volume Storage Class
+  ## If defined, storageClassName: <storageClass>
+  ## If set to "-", storageClassName: "", which disables dynamic provisioning
+  ## If undefined (the default) or set to null, no storageClassName spec is
+  ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+  ##   GKE, AWS & OpenStack)
+  ##
+  # storageClass: "-"
+  accessMode: ReadWriteOnce
+  size: 8Gi
+
+# Recommended resourcec configuration
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 300m

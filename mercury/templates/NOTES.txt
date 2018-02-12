@@ -1,0 +1,10 @@
+Connect to <CHARTNAME>:
+
+1. Run an Alpine pod that you can use as a client:
+  $ kubectl run -i --rm --tty alpine --image=alpine --restart=Never -- sh
+
+2. Install the CURL:
+  $ apk update && apk upgrade && apk add --no-cache curl
+
+3. Check it:
+  $ curl -v {{ template "<CHARTNAME>.fullname" . }}

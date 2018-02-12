@@ -1,0 +1,40 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "<CHARTNAME>.fullname" . }}
+  labels:
+{{ include "<CHARTNAME>.labels.standard" . | indent 4 }}
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ template "<CHARTNAME>.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: {{ template "<CHARTNAME>.image" . }}
+        imagePullPolicy: {{ default "IfNotPresent" .Values.image.pullPolicy }}
+        command: {{ include "<CHARTNAME>.command" . }}
+        ports:
+        - containerPort: {{ .Values.service.internalPort }}
+        env:
+{{ include "<CHARTNAME>.envs" . | indent 8 }}
+        livenessProbe:
+{{ include "<CHARTNAME>.probe" . | indent 10 }}
+        redinessProbe:
+{{ include "<CHARTNAME>.probe" . | indent 10 }}
+        volumeMounts:
+        - name: {{ template "<CHARTNAME>.config.name" . }}
+          mountPath: /.config/
+        - name: {{ template "<CHARTNAME>.pvc.name" . }}
+          mountPath: {{ default "/root/" .Values.persistence.path }}
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+      volumes:
+      - name: {{ template "<CHARTNAME>.config.name" . }}
+        configMap:
+          name: {{ template "<CHARTNAME>.config.name" . }}
+      - name:
+        persistentVolumeClaim:
+          claimName: {{ template "<CHARTNAME>.pvc.name" . }}

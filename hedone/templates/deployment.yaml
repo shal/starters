@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "<CHARTNAME>.fullname" . }}
+  labels:
+{{ include "<CHARTNAME>.labels.standard" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "<CHARTNAME>.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ template "<CHARTNAME>.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.internalPort }}
+          env:
+{{ include "<CHARTNAME>.env" . | indent 12 }}
+          livenessProbe:
+{{ include "<CHARTNAME>.probe" . | indent  12 }}
+          readinessProbe:
+{{ include "<CHARTNAME>.probe" . | indent  12 }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
